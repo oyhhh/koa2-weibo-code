@@ -1,6 +1,6 @@
-const {getUserInfo} = require('../services/user')
+const {getUserInfo,createUser} = require('../services/user')
 const {SuccessModel, ErrorModel} = require('../model/ResModel')
-const {registerUserNameNotExistInfo} = require('../model/ErrorInfo')
+const {registerUserNameNotExistInfo, registerFailInfo, registerUserNameExistInfo} = require('../model/ErrorInfo')
 
 /**
  *
@@ -16,6 +16,26 @@ async function isExist(userName) {
     }
 }
 
+async function register({userName, password, gender}) {
+    const userInfo = await getUserInfo(userName)
+    if (userInfo) {
+        return new ErrorModel(registerUserNameExistInfo)
+    }
+
+    try {
+        await createUser({
+            userName,
+            passwrod,
+            gender
+        })
+        return new SuccessModel()
+    } catch (ex) {
+        console.error(ex.message, ex.stack)
+        return new ErrorModel(registerFailInfo)
+    }
+}
+
 module.exports = {
-    isExist
+    isExist,
+    register
 }
