@@ -11,6 +11,12 @@ router.get('/string', async (ctx, next) => {
 })
 
 router.get('/json', async (ctx, next) => {
+    const session=ctx.session
+    if(!session.keyValue){
+        session.keyValue=0
+    }
+    session.keyValue++
+
     ctx.body = {
         title: 'koa2 json'
     }
