@@ -11,9 +11,9 @@ router.get('/string', async (ctx, next) => {
 })
 
 router.get('/json', async (ctx, next) => {
-    const session=ctx.session
-    if(!session.keyValue){
-        session.keyValue=0
+    const session = ctx.session
+    if (!session.keyValue) {
+        session.keyValue = 0
     }
     session.keyValue++
 
