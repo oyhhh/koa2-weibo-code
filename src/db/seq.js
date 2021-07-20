@@ -20,5 +20,5 @@ if (isProd) {
     }
 }
 
-const seq = Sequelize(database, user, password, conf)
-module.exports = conf
+const seq = new Sequelize(database, user, password, conf)
+module.exports = seq
