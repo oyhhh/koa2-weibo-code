@@ -1,6 +1,7 @@
-const {getUserInfo,createUser} = require('../services/user')
+const {getUserInfo, createUser} = require('../services/user')
 const {SuccessModel, ErrorModel} = require('../model/ResModel')
 const {registerUserNameNotExistInfo, registerFailInfo, registerUserNameExistInfo} = require('../model/ErrorInfo')
+const {doCrypto} = require('../utils/cryp')
 
 /**
  *
@@ -25,7 +26,7 @@ async function register({userName, password, gender}) {
     try {
         await createUser({
             userName,
-            passwrod,
+            password: doCrypto(password),
             gender
         })
         return new SuccessModel()

@@ -13,7 +13,7 @@ async function getUserInfo(userName, password) {
         where: whereOpt
     })
 
-    if (!result) {
+    if (result == null) {
         return result
     }
 
