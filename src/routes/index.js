@@ -1,6 +1,7 @@
 const router = require('koa-router')()
+const {loginCheckFailInfo} = require('../middlewares/loginCheck')
 
-router.get('/', async (ctx, next) => {
+router.get('/',loginCheckFailInfo, async (ctx, next) => {
     await ctx.render('index', {
         title: 'Hello Koa 2!'
     })

@@ -1,6 +1,9 @@
 const {getUserInfo, createUser} = require('../services/user')
 const {SuccessModel, ErrorModel} = require('../model/ResModel')
-const {registerUserNameNotExistInfo, registerFailInfo, registerUserNameExistInfo} = require('../model/ErrorInfo')
+const {registerUserNameNotExistInfo,
+    registerFailInfo,
+    registerUserNameExistInfo,
+    loginFailInfo} = require('../model/ErrorInfo')
 const {doCrypto} = require('../utils/cryp')
 
 /**
@@ -34,6 +37,17 @@ async function register({userName, password, gender}) {
         console.error(ex.message, ex.stack)
         return new ErrorModel(registerFailInfo)
     }
+}
+
+async function login(ctx,userName,password) {
+    const userInfo=await getUserInfo(userName,password)
+    if(!userInfo){
+        return new ErrorModel(loginFailInfo)
+    }
+    if(ctx.session.userInfo==null){
+        ctx.session.userInfo=userInfo
+    }
+    return new SuccessModel()
 }
 
 module.exports = {
