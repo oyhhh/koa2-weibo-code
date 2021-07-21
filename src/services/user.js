@@ -1,3 +1,6 @@
+/**
+ * @description 编辑表
+ */
 const {User} = require('../db/model/index')
 const {formatUser} = require('./_format')
 
@@ -31,7 +34,37 @@ async function createUser({userName, password, gender = 0, nickName}) {
     return data
 }
 
+
+async function updateUser(
+    {newPassword, newNickName, newPicture, newCity},
+    {nickName, password, city}
+) {
+    const updateData = {}
+    if (newPicture) {
+        updateData.picture = newPicture
+    }
+    if (newPassword) {
+        updateData.password = newPassword
+    }
+    if (newCity) {
+        updateData.city = newCity
+    }
+    if (newNickName) {
+        updateData.nickName = newNickName
+    }
+    const whereData = {userName}
+    if (password) {
+        whereData.password = password
+    }
+
+    const result = await User.update(updateData, {
+        where: whereData
+    })
+    return result[0] > 0
+}
+
 module.exports = {
     getUserInfo,
-    createUser
+    createUser,
+    updateUser
 }

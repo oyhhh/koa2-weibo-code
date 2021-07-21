@@ -1,9 +1,16 @@
-const {getUserInfo, createUser} = require('../services/user')
+/**
+ * @description 除了接口中的逻辑,调用services层(表中)的数据
+ */
+const {getUserInfo, createUser, updateUser} = require('../services/user')
 const {SuccessModel, ErrorModel} = require('../model/ResModel')
-const {registerUserNameNotExistInfo,
+const {
+    registerUserNameNotExistInfo,
     registerFailInfo,
     registerUserNameExistInfo,
-    loginFailInfo} = require('../model/ErrorInfo')
+    loginFailInfo,
+    changeInfoFailInfo,
+    changePasswordFileInfo
+} = require('../model/ErrorInfo')
 const {doCrypto} = require('../utils/cryp')
 
 /**
@@ -39,18 +46,63 @@ async function register({userName, password, gender}) {
     }
 }
 
-async function login(ctx,userName,password) {
-    const userInfo=await getUserInfo(userName,password)
-    if(!userInfo){
+async function login(ctx, userName, password) {
+    const userInfo = await getUserInfo(userName, password)
+    if (!userInfo) {
         return new ErrorModel(loginFailInfo)
     }
-    if(ctx.session.userInfo==null){
-        ctx.session.userInfo=userInfo
+    if (ctx.session.userInfo == null) {
+        ctx.session.userInfo = userInfo
     }
+    return new SuccessModel()
+}
+
+async function changeInfo(ctx, {nickName, city, picture}) {
+    const {userName} = ctx.session.userInfo
+    if (!nickName) {
+        nickName = userName
+    }
+    const result = await updateUser({
+        newNickName: nickName,
+        newCity: city,
+        newPicture: picture
+    }, {
+        userName
+    })
+    if (result) {
+        Object.assign(ctx.session.userInfo, {
+            nickName,
+            city,
+            picture
+        })
+        return new SuccessModel()
+    }
+    return new ErrorModel(changeInfoFailInfo)
+}
+
+async function changePassword(userName, password, newPassword) {
+    const result = await updateUser({
+        newPassword: doCrypto(newPassword)
+    }, {
+        userName,
+        password: doCrypto(password)
+    })
+    if (result) {
+        return new SuccessModel()
+    }
+    return new ErrorModel(changePasswordFileInfo)
+}
+
+async function logout(ctx) {
+    delete ctx.session.userInfo
     return new SuccessModel()
 }
 
 module.exports = {
     isExist,
-    register
+    register,
+    login,
+    changePassword,
+    changeInfo,
+    logout
 }
