@@ -10,14 +10,15 @@ const session = require('koa-generic-session')
 const redisStore = require('koa-redis')
 const koaStatic = require('koa-static')
 
-const { REDIS_CONF } = require('./conf/db')
-const { isProd } = require('./utils/env')
-const { SESSION_SECRET_KEY } = require('./conf/secretKeys')
+const {REDIS_CONF} = require('./conf/db')
+const {isProd} = require('./utils/env')
+const {SESSION_SECRET_KEY} = require('./conf/secretKeys')
 
 // 路由
 const userViewRouter = require('./routes/view/user')
 const userAPIRouter = require('./routes/api/user')
 const errorViewRouter = require('./routes/view/error')
+const homeViewRouter = require('./routes/view/blog')
 
 // error handler
 let onerrorConf = {}
@@ -30,7 +31,7 @@ onerror(app, onerrorConf)
 
 // middlewares
 app.use(bodyparser({
-    enableTypes:['json', 'form', 'text']
+    enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
@@ -57,6 +58,7 @@ app.use(session({
 }))
 
 // routes
+app.use(homeViewRouter.routes(), homeViewRouter.allowedMethods())
 app.use(userAPIRouter.routes(), userAPIRouter.allowedMethods())
 app.use(userViewRouter.routes(), userViewRouter.allowedMethods())
 app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods()) // 404 路由注册到最后面
